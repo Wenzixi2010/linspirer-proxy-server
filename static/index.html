@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyLinspirer Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div id="loginPage" class="min-h-screen flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-8 fade-in">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-gray-900">MyLinspirer Admin</h1>
+                <p class="text-gray-500 mt-2">Please enter your password to continue</p>
+            </div>
+            <form id="loginForm">
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2" for="password">Password</label>
+                    <input type="password" id="password" 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="Enter admin password" required>
+                </div>
+                <div id="loginError" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p class="text-sm text-red-600"></p>
+                </div>
+                <button type="submit" id="loginBtn"
+                    class="w-full py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors">
+                    Login
+                </button>
+            </form>
+            <div class="mt-6 text-center text-sm text-gray-500">
+                <p>Default password: admin123</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard" class="hidden">
+        <header class="bg-white shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">MyLinspirer Admin Panel</h1>
+                    <p class="text-sm text-gray-500 mt-1">Python Version By Zxi2233</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button onclick="showChangePasswordModal()"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        修改密码
+                    </button>
+                    <button onclick="logout()"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        退出登录
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="bg-white border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex space-x-8">
+                    <button onclick="switchTab('rules')" id="tab-rules" data-tab-button="rules"
+                        class="py-4 px-1 border-b-2 font-medium text-sm transition-colors border-transparent text-gray-500 hover:text-gray-700">
+                        覆写规则
+                    </button>
+                    <button onclick="switchTab('commands')" id="tab-commands" data-tab-button="commands"
+                        class="py-4 px-1 border-b-2 font-medium text-sm transition-colors border-transparent text-gray-500 hover:text-gray-700">
+                        命令队列
+                    </button>
+                    <button onclick="switchTab('logs')" id="tab-logs" data-tab-button="logs"
+                        class="py-4 px-1 border-b-2 font-medium text-sm transition-colors border-transparent text-gray-500 hover:text-gray-700">
+                        请求日志
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="max-w-7xl mx-auto px-4 py-6">
+            <div id="rulesTab" data-tab="rules" class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-semibold text-gray-900">覆写的规则</h2>
+                    <button onclick="showGlobalRuleEditor()" id="toggleRuleBtn"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
+                        + 创建全局规则
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <div class="lg:col-span-1 bg-white rounded-lg shadow">
+                        <div class="px-4 py-3 border-b border-gray-200">
+                            <h3 class="text-sm font-semibold text-gray-900">用户与规则</h3>
+                        </div>
+                        <div class="p-4">
+                            <div class="mb-4">
+                                <button onclick="showGlobalRules()"
+                                    class="w-full px-3 py-2 text-left text-sm rounded-lg bg-purple-50 border border-purple-200 hover:bg-purple-100 transition-colors">
+                                    <span class="font-medium text-purple-700">🌐 全局规则</span>
+                                    <span class="block text-xs text-purple-500 mt-1">适用于所有用户</span>
+                                </button>
+                            </div>
+                            <div class="border-t border-gray-200 pt-4">
+                                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">用户列表</h4>
+                                <div id="usersList" class="space-y-2 max-h-96 overflow-y-auto">
+                                    <p class="text-sm text-gray-500">加载中...</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                <button onclick="showUserRuleEditor()"
+                                    class="w-full px-3 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors">
+                                    + 添加用户规则
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-3">
+                        <div id="globalRulesSection">
+                            <div class="bg-white rounded-lg shadow mb-4">
+                                <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+                                    <h3 class="text-sm font-semibold text-gray-900">🌐 全局规则</h3>
+                                </div>
+                                <div class="p-4">
+                                    <p class="text-sm text-gray-500 mb-4">全局规则适用于所有没有配置用户特定规则的用户。</p>
+                                    <div id="globalRulesList" class="space-y-2">
+                                        <p class="text-sm text-gray-500">加载中...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="userRulesSection" class="hidden">
+                            <div class="bg-white rounded-lg shadow mb-4">
+                                <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+                                    <div>
+                                        <h3 class="text-sm font-semibold text-gray-900" id="selectedUserTitle">用户规则</h3>
+                                        <p class="text-xs text-gray-500" id="selectedUserEmail"></p>
+                                    </div>
+                                    <button onclick="showGlobalRules()" class="text-sm text-indigo-600 hover:text-indigo-800">
+                                        ← 返回全局规则
+                                    </button>
+                                </div>
+                                <div class="p-4">
+                                    <div id="userRulesList" class="space-y-2">
+                                        <p class="text-sm text-gray-500">加载中...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="ruleEditor" class="hidden bg-white rounded-lg shadow p-6 mb-4">
+                            <h3 class="text-lg font-semibold mb-4" id="ruleEditorTitle">创建新规则</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">方法名称</label>
+                                    <input type="text" id="ruleMethodName" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        placeholder="com.linspirer.method.name">
+                                </div>
+                                <div id="userEmailField">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">User ID (可多选，留空为全局规则)</label>
+                                    <div id="emailDropdown" class="relative">
+                                        <button type="button" onclick="toggleEmailDropdown()"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white flex items-center justify-between">
+                                            <span id="emailDropdownText" class="truncate text-gray-500">请选择用户...(留空为全局规则)</span>
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </button>
+                                        <div id="emailOptions" class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                            <div class="p-2 border-b border-gray-200 bg-gray-50">
+                                                <label class="flex items-center space-x-2 cursor-pointer">
+                                                    <input type="checkbox" id="emailSelectAll" onchange="toggleEmailSelectAll()"
+                                                        class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
+                                                    <span class="text-sm text-gray-700">全选/取消全选</span>
+                                                </label>
+                                            </div>
+                                            <div id="emailOptionsList">
+                                                <p class="p-3 text-sm text-gray-500 text-center">加载中...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="selectedEmails" class="mt-2 flex flex-wrap gap-1"></div>
+                                    <p id="ruleScopeHint" class="text-xs text-gray-500 mt-1">当前: 全局规则</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">操作</label>
+                                    <select id="ruleAction" onchange="toggleCustomResponse()"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="passthrough">直连 (原始响应)</option>
+                                        <option value="replace">覆写响应 (自定义返回响应)</option>
+                                        <option value="modify">自定义请求 (自定义请求内容)</option>
+                                        <option value="randomize_app_duration">随机应用时长 (随机修改使用时长)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">备注 (可选)</label>
+                                    <input type="text" id="ruleRemark" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        placeholder="备注">
+                                </div>
+                                <div id="customResponseSection" class="hidden">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">配置内容</label>
+                                    <textarea id="ruleCustomResponse" rows="10"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        placeholder='Your json config here...'></textarea>
+                                </div>
+                                <div id="randomizeConfigSection" class="hidden">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">随机时长配置</label>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">目标应用包名</label>
+                                            <div id="packagesContainer" class="space-y-2">
+                                                <div class="flex items-center space-x-2 package-input-row">
+                                                    <input type="text" name="rulePackageItem" 
+                                                        class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                        placeholder="com.kingsoft">
+                                                    <button type="button" onclick="addPackageInput()"
+                                                        class="px-3 py-2 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600 flex-shrink-0">
+                                                        +
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-xs text-gray-500 mb-1">最大时长(分钟)</label>
+                                                <input type="number" id="ruleMaxDuration" value="30" min="1" max="1440"
+                                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs text-gray-500 mb-1">保留记录数</label>
+                                                <input type="number" id="ruleKeepCount" value="2" min="1" max="10"
+                                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="expectedRequestPreview" class="mt-4"></div>
+                                <div class="flex justify-end space-x-3">
+                                    <button type="button" onclick="toggleRuleEditor()"
+                                        class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg text-sm font-medium hover:bg-gray-200">
+                                        取消
+                                    </button>
+                                    <button type="button" onclick="saveRule()" id="saveRuleBtn"
+                                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
+                                        保存规则
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="rulesList" class="space-y-2">
+                            <div class="bg-white rounded-lg shadow overflow-hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">方法</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">范围</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">操作</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">备注</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">状态</th>
+                                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="rulesTableBody" class="bg-white divide-y divide-gray-200"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="commandsTab" data-tab="commands" class="hidden space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-semibold text-gray-900">命令队列</h2>
+                    <button onclick="loadCommands()" id="refreshCommandsBtn"
+                        class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">
+                        刷新
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div id="commandsList" class="divide-y divide-gray-200">
+                        <div class="p-8 text-center text-gray-500">
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="loading-spinner mb-3"></div>
+                                <p>加载命令中...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="logsTab" data-tab="logs" class="hidden space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-semibold text-gray-900">请求日志</h2>
+                    <button onclick="loadLogs()" id="refreshLogsBtn"
+                        class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">
+                        刷新
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="p-4 bg-gray-50 border-b flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                        <div class="flex-1 w-full">
+                            <input type="text" id="logSearch" onkeyup="debounceSearch(event)"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="Search in request/response...">
+                        </div>
+                        <div class="w-full sm:w-48">
+                            <select id="logMethodFilter" onchange="filterLogsByMethod()"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer hover:border-gray-400 transition-colors appearance-none bg-white bg-no-repeat bg-right-center pr-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">All Methods</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Method</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Scope</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Request Body</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logsTableBody" class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td colspan="3" class="px-6 py-12 text-center text-gray-500">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <div class="loading-spinner mb-3"></div>
+                                            <p>Loading logs...</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="logsPagination" class="p-4 border-t bg-gray-50 hidden">
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-500" id="logsPaginationInfo"></div>
+                        <div class="flex space-x-2">
+                            <button onclick="goToLogsPage('prev')" id="logsPrevBtn"
+                                class="px-3 py-1 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50">
+                                Previous
+                            </button>
+                            <button onclick="goToLogsPage('next')" id="logsNextBtn"
+                                class="px-3 py-1 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50">
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow overflow-hidden mt-4">
+                    <div class="p-4 bg-gray-50 border-b">
+                        <h3 class="text-sm font-semibold text-gray-900">当前生效的规则</h3>
+                    </div>
+                    <div id="userRulesDisplay" class="divide-y divide-gray-200">
+                        <div class="p-8 text-center text-gray-500">
+                            <p>点击日志记录查看匹配的规则</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="changePasswordModal" class="hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 fade-in">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">修改密码</h3>
+            </div>
+            <form onsubmit="handleChangePassword(event)">
+                <div class="p-6 space-y-4">
+                    <div id="passwordError" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <p class="text-sm text-red-600"></p>
+                    </div>
+                    <div id="passwordSuccess" class="hidden p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <p class="text-sm text-green-600">密码修改成功！您将被注销...</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">旧密码</label>
+                        <input type="password" id="oldPassword" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">新密码</label>
+                        <input type="password" id="newPassword" required minlength="6"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">确认新密码</label>
+                        <input type="password" id="confirmPassword" required minlength="6"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+                <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                    <button type="button" onclick="closeChangePasswordModal()" id="cpCancelBtn"
+                        class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">
+                        取消
+                    </button>
+                    <button type="submit" id="cpSubmitBtn"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
+                        修改密码
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="logDetailModal" class="hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-5xl mx-4 max-h-[90vh] flex flex-col fade-in">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">请求详情</h3>
+                    <p class="text-sm text-gray-500" id="logDetailTime"></p>
+                </div>
+                <button onclick="closeLogDetailModal()"
+                    class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6">
+                <div class="grid grid-cols-1 gap-6">
+                    <div data-section="request">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-gray-900">请求</h4>
+                            <div class="flex text-xs rounded-md border border-gray-300 overflow-hidden">
+                                <button type="button" onclick="toggleViewMode('request', 'tree')" id="request-view-tree"
+                                    class="px-2 py-1 bg-gray-200 text-gray-900 font-medium">Tree</button>
+                                <button type="button" onclick="toggleViewMode('request', 'raw')" id="request-view-raw"
+                                    class="px-2 py-1 border-l border-gray-300 bg-white text-gray-600 hover:bg-gray-50">Raw</button>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded border border-gray-200 overflow-x-auto">
+                            <div id="logDetailRequestTree" class="tree-view"></div>
+                            <pre id="logDetailRequestRaw" class="text-xs text-gray-800 whitespace-pre-wrap break-words hidden"></pre>
+                        </div>
+                    </div>
+                    <div id="interceptedRequestSection" class="hidden" data-section="interceptedRequest">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center">
+                                <h4 class="font-semibold text-gray-900 mr-4">修改的请求</h4>
+                                <span id="interceptedRequestBadge" class="px-2 py-1 rounded-full text-xs status-passthrough"></span>
+                            </div>
+                            <div class="flex text-xs rounded-md border border-gray-300 overflow-hidden">
+                                <button type="button" onclick="toggleViewMode('interceptedRequest', 'tree')" id="interceptedRequest-view-tree"
+                                    class="px-2 py-1 bg-gray-200 text-gray-900 font-medium">Tree</button>
+                                <button type="button" onclick="toggleViewMode('interceptedRequest', 'raw')" id="interceptedRequest-view-raw"
+                                    class="px-2 py-1 border-l border-gray-300 bg-white text-gray-600 hover:bg-gray-50">Raw</button>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded border border-gray-200 overflow-x-auto">
+                            <div id="logDetailInterceptedRequestTree" class="tree-view"></div>
+                            <pre id="logDetailInterceptedRequestRaw" class="text-xs text-gray-800 whitespace-pre-wrap break-words hidden"></pre>
+                        </div>
+                    </div>
+                    <div data-section="response">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-gray-900">响应</h4>
+                            <div class="flex text-xs rounded-md border border-gray-300 overflow-hidden">
+                                <button type="button" onclick="toggleViewMode('response', 'tree')" id="response-view-tree"
+                                    class="px-2 py-1 bg-gray-200 text-gray-900 font-medium">Tree</button>
+                                <button type="button" onclick="toggleViewMode('response', 'raw')" id="response-view-raw"
+                                    class="px-2 py-1 border-l border-gray-300 bg-white text-gray-600 hover:bg-gray-50">Raw</button>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded border border-gray-200 overflow-x-auto">
+                            <div id="logDetailResponseTree" class="tree-view"></div>
+                            <pre id="logDetailResponseRaw" class="text-xs text-gray-800 whitespace-pre-wrap break-words hidden"></pre>
+                        </div>
+                    </div>
+                    <div id="interceptedResponseSection" class="hidden" data-section="interceptedResponse">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center">
+                                <h4 class="font-semibold text-gray-900 mr-4">修改的响应</h4>
+                                <span id="interceptedResponseBadge" class="px-2 py-1 rounded-full text-xs status-passthrough"></span>
+                            </div>
+                            <div class="flex text-xs rounded-md border border-gray-300 overflow-hidden">
+                                <button type="button" onclick="toggleViewMode('interceptedResponse', 'tree')" id="interceptedResponse-view-tree"
+                                    class="px-2 py-1 bg-gray-200 text-gray-900 font-medium">Tree</button>
+                                <button type="button" onclick="toggleViewMode('interceptedResponse', 'raw')" id="interceptedResponse-view-raw"
+                                    class="px-2 py-1 border-l border-gray-300 bg-white text-gray-600 hover:bg-gray-50">Raw</button>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded border border-gray-200 overflow-x-auto">
+                            <div id="logDetailInterceptedResponseTree" class="tree-view"></div>
+                            <pre id="logDetailInterceptedResponseRaw" class="text-xs text-gray-800 whitespace-pre-wrap break-words hidden"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-end">
+                <button onclick="closeLogDetailModal()"
+                    class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

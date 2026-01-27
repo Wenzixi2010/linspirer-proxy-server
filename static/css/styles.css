@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.loading-spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #4f46e5;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.tree-view {
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.tree-item {
+    cursor: pointer;
+}
+
+.tree-item:hover {
+    background-color: #f3f4f6;
+}
+
+.status-passthrough {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.status-modify {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status-replace {
+    background: #f3e8ff;
+    color: #7c3aed;
+}
+
+.modal-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+}
