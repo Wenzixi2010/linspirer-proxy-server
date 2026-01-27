@@ -2,18 +2,13 @@
 
 一个Python实现的MyLinspirer MITM代理服务器
 
-## 功能特性
-
-- **代理服务器**：将请求转发到Linspirer云服务器
-- **认证机制**：基于JWT的认证，使用bcrypt密码哈希
-- **请求/响应拦截**：修改JSON-RPC请求和响应
-- **命令队列**：管理和验证发送到设备的命令
-- **请求日志**：记录所有请求和响应，便于调试
-- **基于规则的拦截**：配置规则拦截和修改特定方法
-- **随机应用时长**：自动修改应用使用时长记录
+## 展示
+<img width="1132" height="750" alt="image" src="https://github.com/user-attachments/assets/c417ed0e-56f3-4e27-86e7-8578280ed803" />
+<img width="1130" height="752" alt="image" src="https://github.com/user-attachments/assets/0f351a19-7b4a-47cf-8120-d7e0a524e2db" />
+<img width="1132" height="750" alt="image" src="https://github.com/user-attachments/assets/390c5e41-4ca5-4bc3-85e8-c1d6409bb9b3" />
 
 ## 系统要求
-
+- Linspirer MDM v5.04
 - Python 3.10+
 
 ## 安装步骤
@@ -25,7 +20,7 @@ pip install -r requirements.txt
 
 ## 配置说明
 
-复制示例环境文件并自定义：
+复制示例环境文件并填写密钥（逆向自launcher）：
 
 ```bash
 cp .env.example .env
@@ -46,7 +41,7 @@ cp .env.example .env
 ```bash
 python main.py
 ```
-```bash
 或者：
-gunicorn main:app -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8080
+```bash
+gunicorn main:app -k uvicorn.workers.UvicornWorker -b IP:端口
 ```
